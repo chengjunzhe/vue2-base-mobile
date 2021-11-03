@@ -35,6 +35,8 @@
     "less-loader": "^5.0.0",
     "postcss-px-to-viewport": "^1.1.1",
     "prettier": "^2.2.1",
+    "style-resources-loader": "^1.4.1",
+    "vue-cli-plugin-style-resources-loader": "^0.1.5",
     "vue-template-compiler": "^2.6.11"
   }
 }
