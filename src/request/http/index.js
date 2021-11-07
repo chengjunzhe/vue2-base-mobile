@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { apiBasePath, baseApi } from '@/config'
 import Qs from 'qs'
-import Cookies from 'js-cookie'
 const IS_PROD = ['production'].includes(process.env.NODE_ENV)
 
 import { Toast } from 'vant'
@@ -16,13 +15,10 @@ const $axios = axios.create({
 // 请求拦截器
 $axios.interceptors.request.use(
   (config) => {
-    const token = Cookies.get('token')
-    if (token) {
-      config.headers.token = token // 请求头部添加token
-    }
     return config
   },
   (error) => {
+    console.log(error)
     return Promise.reject(error)
   }
 )
@@ -30,8 +26,12 @@ $axios.interceptors.request.use(
 // 响应拦截器
 $axios.interceptors.response.use(
   (response) => {
-    // 如果返回状态码显示正确，则resolve，反之reject
-    return Promise.resolve(response.data)
+    const { code, msg, data } = response.data
+    if (code !== 200) {
+      Toast.fail(msg)
+      return Promise.reject(msg)
+    }
+    return { data, msg }
   },
   (error) => {
     if (error.response) {
@@ -43,7 +43,7 @@ $axios.interceptors.response.use(
           Toast.fail('服务器不可用')
           break
         default:
-          Toast.fail(error.response.data.message)
+          Toast.fail('服务器错误')
       }
     } else {
       // 请求超时或者网络有问题
